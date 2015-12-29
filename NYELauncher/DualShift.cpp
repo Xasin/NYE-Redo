@@ -23,19 +23,19 @@ void DualShift::activate() {
 void DualShift::shiftOut(uint8_t data) {
 	for(uint8_t i=0; i<8; i++) {
 		this->bitOut(data & 1);
-		data >= 1;
+		data = (data >> 1);
 	}
 }
 
-DualShift::DualShift(uint8_t *port, uint8_t pins) {
+DualShift::DualShift(volatile uint8_t *port, uint8_t pins) {
 	this->IOREG = port;
 	*(port -1) |= (0b11 << pins);
 
 	this->PINS = pins;
 }
 
-
-
 void DualShift::update() {
-
+	this->shiftOut(this->REG_B);
+	this->shiftOut(this->REG_B);
+	this->activate();
 }

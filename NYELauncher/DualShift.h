@@ -13,7 +13,7 @@
 class DualShift {
 private:
 
-	uint8_t *IOREG;
+	volatile uint8_t *IOREG;
 	uint8_t PINS;
 
 	void bitOut(uint8_t b);
@@ -24,7 +24,7 @@ public:
 	uint8_t REG_A=0;
 	uint8_t REG_B=0;
 
-	DualShift(uint8_t *port, uint8_t pins);
+	DualShift(volatile uint8_t *port, uint8_t pins);
 
 	void update();
 };
