@@ -1,0 +1,34 @@
+Parts used: 
+	- ATTiny44
+	- 2x 74 HC 595
+
+Connections: 
+	Power: 
+		GND:
+			- SPI
+			- PSU
+			- Switch
+			- MCU
+			- OSC
+			- SR ( WITH! OE )
+		Vcc:			
+		  - RST Resistor
+			- SPI
+			- PSU
+			- SR 
+			- MCU
+
+		RST:
+			- SPI
+			- RST Resistor
+			- SR
+			- MCU
+
+		SPI Connections: 
+			- MISO
+			- MOSI
+			- SCK
+
+		Other:
+			- OSC
+			- MCU --> SR
