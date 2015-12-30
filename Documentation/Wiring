@@ -31,4 +31,15 @@ Connections:
 
 		Other:
 			- OSC
+			- Button & LED
 			- MCU --> SR
+
+			- Diodes
+			- SR --> Connectors
+
+MCU:
+			- LED = PA7
+			- Button = PA3
+			- Sin = PA0
+			- Sclk = PA1
+			- Srck = PA2
