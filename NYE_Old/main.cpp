@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- *  Created on: Dec 29, 2015
+ *  Created on: Dec 31, 2015
  *      Author: xasin
  */
 
@@ -20,44 +20,61 @@
 
 #define MID(T) PRE_TIME + (T)
 
-DualShift output(&PORTA, 0);
+DualShift output(&PORTB, 0);
 
 void setOutput(uint8_t n) {
 
-#define X 8
-#define Y 3
+#define X 6
+#define Y 6
 
 	if(n < (X*Y)) {
-		output.REG_A = (1 << (n % X));
-		output.REG_B = ~(1 << (n / X));
+		uint16_t REG = (1 << (n / X) | 1 << (6 + n % X) | 1 << 12);
+		output.REG_B = REG & 0x00ff;
+		output.REG_A = (REG & 0xff00) >> 8;
 		output.update();
 	}
 	else {
 		output.REG_A = 0;
-		output.REG_B = 0xff;
+		output.REG_B = 0;
 		output.update();
 	}
 }
 
 uint8_t prscL = 0;
-uint8_t prsc=0;
+uint16_t prsc=0;
 uint8_t currentStep = 0;
 int32_t current10MS = 0;
 
-#define PRE_TIME 16 _M
+#define PRE_TIME 20 _M
 
 static int32_t scedule[] = {
-		5 _S,
+		MID( - 19 _M - 30 _S),
+		MID( - 15 _M),
+		MID( - 10 _M),
+		MID( - 5 _M),
+		MID( - 2 _M - 30 _S),
+		MID( - 1 _M),
+		MID( - 30 _S),
+		MID( - 15 _S),
+
+		//Countdown!!
+		MID( - 5 _S),
+		MID( - 4 _S),
+		MID( - 3 _S),
+		MID( - 2 _S),
+
+		//Happy new year owo
+		MID( 0 ),
 
 		STOP
 };
 
-ISR(TIM0_COMPA_vect) {
-	if(++prsc == 200) {
+ISR(TIMER0_COMPA_vect) {
+	if(++prsc == 2000) {
 		prsc = 0;
 
 		if(++prscL == 200 _MS) {
-			PORTA ^= (1<< 7);
+			PORTD ^= (1<< 2);
 			prscL = 0;
 		}
 
@@ -66,7 +83,7 @@ ISR(TIM0_COMPA_vect) {
 		if(scedule[currentStep] == current10MS)
 			setOutput(currentStep++);
 		else if(scedule[currentStep] == -1) {
-			PORTA &=~ (1<< 7);
+			PORTD &=~ (1<< 2);
 			setOutput(0xff);
 		}
 		else
@@ -76,8 +93,8 @@ ISR(TIM0_COMPA_vect) {
 
 int main() {
 
-	DDRA |= (1<< 7);
-	PORTA |= (1<< 3);
+	DDRD |= (1<< 2);
+	PORTD |= (1<< 1);
 
 	// /8 prescaler + CTC Mode
 	TCCR0A |= (1 << WGM01);
@@ -85,9 +102,11 @@ int main() {
 	OCR0A = 250 -1;
 	TIMSK0 |= (1<< OCIE0A);
 
-	while((PINA & (1<< 3)) != 0) {
+	setOutput(0xff);
+
+	while((PIND & (1<< 1)) != 0) {
 		_delay_ms(25);
-		PORTA ^= (1<< 7);
+		PORTD ^= (1<< 2);
 	}
 
 	sei();
